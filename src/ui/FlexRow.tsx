@@ -1,9 +1,10 @@
+import type { PropsWithChildren } from "react";
 import styled, { css } from "styled-components";
 
-interface FlexRowProps {
+interface FlexRowProps extends PropsWithChildren {
   direction?: "row" | "column";
 }
-const FlexRow = styled.div<FlexRowProps>`
+const StyledFlexRow = styled.div<FlexRowProps>`
   display: flex;
   ${(props) =>
     props.direction === "row" &&
@@ -20,7 +21,6 @@ const FlexRow = styled.div<FlexRowProps>`
     `}
 `;
 
-FlexRow.defaultProps = {
-  direction: "row",
-};
-export default FlexRow;
+export default function FlexRow({ direction = "row", ...props }: FlexRowProps) {
+  return <StyledFlexRow direction={direction} {...props} />;
+}
