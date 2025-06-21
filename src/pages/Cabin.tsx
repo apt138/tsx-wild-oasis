@@ -5,11 +5,10 @@ import Heading from "../ui/Heading";
 import CabinTable from "../features/cabin/CabinTable";
 
 export default function Cabin() {
-  const {
-    data: cabins = [],
-    isPending,
-    error,
-  } = useQuery({ queryKey: ["cabin/getAll"], queryFn: getAllCabins });
+  const { data: cabins = [], isPending } = useQuery({
+    queryKey: ["cabin/getAll"],
+    queryFn: getAllCabins,
+  });
   console.log(cabins);
 
   if (isPending) return <p>Loading...</p>;
