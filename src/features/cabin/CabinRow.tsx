@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import type { Cabin } from "./types";
+import { formatCurrency } from "../../utils/formatter";
+import Button from "../../ui/Button";
 
 interface CabinRowProps {
   cabin: Cabin;
@@ -60,9 +62,10 @@ export default function CabinRow({ cabin }: CabinRowProps) {
     <TableRow role="row">
       <Img src={image} alt={`${cabinName}`} />
       <Cabin>{cabinName}</Cabin>
-      <Capacity>{maxCapacity}</Capacity>
-      <Price>{regularPrice}</Price>
-      <Discount>{discount}</Discount>
+      <Capacity>{`Fits up to ${maxCapacity} guests`}</Capacity>
+      <Price>{formatCurrency(regularPrice)}</Price>
+      <Discount>{formatCurrency(discount || 0)}</Discount>
+      <Button variation="danger">Delete</Button>
     </TableRow>
   );
 }

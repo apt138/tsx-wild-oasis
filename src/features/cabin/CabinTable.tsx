@@ -11,6 +11,8 @@ const Table = styled.div`
   border: 1px solid var(--color-grey-200);
   border-radius: var(--border-radius-md);
   overflow: hidden;
+
+  width: 100%;
 `;
 
 const TableHeader = styled.header`
