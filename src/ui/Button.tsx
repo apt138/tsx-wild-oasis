@@ -1,10 +1,12 @@
-import type { PropsWithChildren } from "react";
+import type { ComponentPropsWithoutRef, PropsWithChildren } from "react";
 import styled, { css } from "styled-components";
 
 type ButtonSizeType = "sm" | "md" | "lg";
 type ButtonVariationType = "primary" | "secondary" | "danger";
 
-interface ButtonProps extends PropsWithChildren {
+interface ButtonProps
+  extends PropsWithChildren,
+    ComponentPropsWithoutRef<"button"> {
   size?: ButtonSizeType;
   variation?: ButtonVariationType;
 }
