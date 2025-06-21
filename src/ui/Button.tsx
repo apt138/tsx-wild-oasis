@@ -1,9 +1,10 @@
+import type { PropsWithChildren } from "react";
 import styled, { css } from "styled-components";
 
 type ButtonSizeType = "sm" | "md" | "lg";
 type ButtonVariationType = "primary" | "secondary" | "danger";
 
-interface ButtonProps {
+interface ButtonProps extends PropsWithChildren {
   size?: ButtonSizeType;
   variation?: ButtonVariationType;
 }
@@ -57,7 +58,7 @@ const buttonVariationStyles: ButtonVariationProps = {
   `,
 };
 
-const Button = styled.button<ButtonProps>`
+const StyledButton = styled.button<ButtonProps>`
   border: none;
   border-radius: var(--border-radius-sm);
   box-shadow: var(--shadow-sm);
@@ -65,4 +66,10 @@ const Button = styled.button<ButtonProps>`
   ${(props) => buttonVariationStyles[props.variation || "primary"]}
 `;
 
-export default Button;
+export default function Button({
+  size = "md",
+  variation = "primary",
+  ...props
+}: ButtonProps) {
+  return <StyledButton size={size} variation={variation} {...props} />;
+}
