@@ -11,3 +11,15 @@ export async function getAllCabins() {
   }
   return wo_cabins;
 }
+
+export async function deleteCabin(cabin_id: number) {
+  const { error } = await supabase
+    .from("wo_cabins")
+    .delete()
+    .eq("cabin_id", cabin_id);
+
+  if (error) {
+    console.error(error);
+    throw new Error(`Error while deleting the cabin with id: ${cabin_id}`);
+  }
+}

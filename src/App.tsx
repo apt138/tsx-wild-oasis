@@ -13,7 +13,7 @@ import Login from "./pages/Login";
 import AppLayout from "./ui/AppLayout";
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { staleTime: 10 * 1000 } },
+  defaultOptions: { queries: { staleTime: 5 * 1000 } },
 });
 
 export default function App() {
