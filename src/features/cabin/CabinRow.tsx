@@ -2,12 +2,10 @@ import styled from "styled-components";
 import type { Cabin } from "./types";
 import { formatCurrency } from "../../utils/formatter";
 import Button from "../../ui/Button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteCabin } from "../../services/apiCabins";
-import toast from "react-hot-toast";
 import { useState } from "react";
 import CreateCabinForm from "./CreateCabinForm";
 import FlexRow from "../../ui/FlexRow";
+import useDeleteCabinMutation from "./hooks/useDeleteCabinMutation";
 
 interface CabinRowProps {
   cabin: Cabin;
@@ -67,18 +65,7 @@ export default function CabinRow({ cabin }: CabinRowProps) {
     cabin_id: cabinId,
   } = cabin;
 
-  const queryClient = useQueryClient();
-
-  const { isPending, mutate } = useMutation({
-    mutationFn: deleteCabin,
-    onSuccess: () => {
-      toast.success("Cabin deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["cabin/getAll"] });
-    },
-    onError: (err) => {
-      toast.error(err.message);
-    },
-  });
+  const { isDeletePending, deleteMutationFn } = useDeleteCabinMutation();
 
   return (
     <>
@@ -92,8 +79,8 @@ export default function CabinRow({ cabin }: CabinRowProps) {
           <Button onClick={() => setShowForm((s) => !s)}>Edit</Button>
           <Button
             variation="danger"
-            disabled={isPending}
-            onClick={() => mutate(cabinId)}
+            disabled={isDeletePending}
+            onClick={() => deleteMutationFn(cabinId)}
           >
             Delete
           </Button>

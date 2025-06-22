@@ -4,11 +4,10 @@ import TextArea from "../../ui/TextArea";
 import FileInput from "../../ui/FileInput";
 import Button from "../../ui/Button";
 import { useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createCabin, updateCabin } from "../../services/apiCabins";
-import toast from "react-hot-toast";
 import type { Cabin, InsertCabin } from "./types";
 import FormRow from "../../ui/FormRow";
+import useCreateCabinMutation from "./hooks/useCreateCabinMutation";
+import useUpdateCabinMutation from "./hooks/useUpdateCabinMutation";
 
 const initialValue: InsertCabin = {
   cabin_name: "",
@@ -40,38 +39,20 @@ export default function CreateCabinForm({ cabin }: CreateCabinFormProps) {
     // else populate with default value
     defaultValues: cabin || initialValue,
   });
-  const queryClient = useQueryClient();
   // mutation function for handing POST operation
-  const { mutate: createMutation, isPending: isCreatePending } = useMutation({
-    mutationFn: createCabin,
-    onSuccess: (data) => {
-      toast.success(`Cabin '${data.cabin_name}' created successfully.`);
-      queryClient.invalidateQueries({ queryKey: ["cabin/getAll"] });
-      reset();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+  const { isCreatePending, createMutationFn } = useCreateCabinMutation();
   // mutation function for handling PATCH Operation
-  const { mutate: updateMutation, isPending: isEditPending } = useMutation({
-    // since cabin_id won't change during the session
-    // making use of closure to pass the cabin_id to update function
-    mutationFn: (data: Cabin) => updateCabin(cabin?.cabin_id, data),
-    onSuccess: (data) => {
-      toast.success(`Cabin '${data?.cabin_id}' updated sucessfully.`);
-      queryClient.invalidateQueries({ queryKey: ["cabin/getAll"] });
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-  const isPending = isCreatePending || isEditPending;
+  const { isUpdatePending, updateMutationFn } = useUpdateCabinMutation();
+  const isPending = isCreatePending || isUpdatePending;
   function onSubmit(data: InsertCabin | Cabin) {
     if (isEditCabin(data)) {
-      updateMutation(data);
+      updateMutationFn({ id: cabin?.cabin_id, cabin: data });
     } else {
-      createMutation(data);
+      createMutationFn(data, {
+        onSuccess: () => {
+          reset();
+        },
+      });
     }
   }
   return (

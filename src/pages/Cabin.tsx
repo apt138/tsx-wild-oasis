@@ -1,5 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import { getAllCabins } from "../services/apiCabins";
 import FlexBox from "../ui/FlexRow";
 import Heading from "../ui/Heading";
 import CabinTable from "../features/cabin/CabinTable";
@@ -7,14 +5,12 @@ import { useState } from "react";
 import Button from "../ui/Button";
 import CreateCabinForm from "../features/cabin/CreateCabinForm";
 import Spinner from "../ui/Spinner";
+import useCabinQuery from "../features/cabin/hooks/useCabinQuery";
 
 export default function Cabin() {
-  const { data: cabins = [], isPending } = useQuery({
-    queryKey: ["cabin/getAll"],
-    queryFn: getAllCabins,
-  });
+  const { cabins, isPendingCabins } = useCabinQuery();
   const [showForm, setShowForm] = useState(false);
-  if (isPending) return <Spinner />;
+  if (isPendingCabins) return <Spinner />;
 
   return (
     <>
