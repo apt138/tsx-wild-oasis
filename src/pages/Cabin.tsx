@@ -6,6 +6,7 @@ import CabinTable from "../features/cabin/CabinTable";
 import { useState } from "react";
 import Button from "../ui/Button";
 import CreateCabinForm from "../features/cabin/CreateCabinForm";
+import Spinner from "../ui/Spinner";
 
 export default function Cabin() {
   const { data: cabins = [], isPending } = useQuery({
@@ -13,7 +14,7 @@ export default function Cabin() {
     queryFn: getAllCabins,
   });
   const [showForm, setShowForm] = useState(false);
-  if (isPending) return <p>Loading...</p>;
+  if (isPending) return <Spinner />;
 
   return (
     <>
