@@ -4,6 +4,7 @@ import Input from "../../ui/Input";
 import TextArea from "../../ui/TextArea";
 import FileInput from "../../ui/FileInput";
 import Button from "../../ui/Button";
+import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
 
 const FormRow = styled.div`
   padding: 1.2rem 0;
@@ -35,26 +36,46 @@ const Label = styled.label`
 `;
 
 export default function CreateCabinForm() {
+  const { register, handleSubmit } = useForm();
+  function onSubmit(data: FieldValues) {
+    console.log(data);
+  }
   return (
-    <Form>
+    <Form onSubmit={handleSubmit(onSubmit)}>
       <FormRow>
         <Label htmlFor="cabin-name">Cabin name</Label>
-        <Input type="text" id="cabin-name" name="cabinName" />
+        <Input type="text" id="cabin-name" {...register("cabinName")} />
       </FormRow>
 
       <FormRow>
         <Label htmlFor="max-capacity">Max capacity</Label>
-        <Input type="number" id="max-capacity" name="maxCapacity" />
+        <Input type="number" id="max-capacity" {...register("maxCapacity")} />
       </FormRow>
 
       <FormRow>
         <Label htmlFor="regular-price">Regular Price</Label>
-        <Input type="number" id="regular-price" name="regularPrice" />
+        <Input
+          type="number"
+          id="regular-price"
+          step={0.01}
+          {...register("regularPrice")}
+        />
+      </FormRow>
+
+      <FormRow>
+        <Label htmlFor="discount">Discount</Label>
+        <Input
+          type="number"
+          id="discount"
+          step={0.01}
+          defaultValue={0}
+          {...register("discount")}
+        />
       </FormRow>
 
       <FormRow>
         <Label htmlFor="description">Description for website</Label>
-        <TextArea id="description" name="description" />
+        <TextArea id="description" {...register("description")} />
       </FormRow>
 
       <FormRow>
