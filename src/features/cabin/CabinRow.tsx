@@ -5,6 +5,9 @@ import Button from "../../ui/Button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCabin } from "../../services/apiCabins";
 import toast from "react-hot-toast";
+import { useState } from "react";
+import CreateCabinForm from "./CreateCabinForm";
+import FlexRow from "../../ui/FlexRow";
 
 interface CabinRowProps {
   cabin: Cabin;
@@ -54,6 +57,7 @@ const Discount = styled.div`
   color: var(--color-grey-700);
 `;
 export default function CabinRow({ cabin }: CabinRowProps) {
+  const [showForm, setShowForm] = useState(false);
   const {
     image,
     cabin_name: cabinName,
@@ -77,19 +81,25 @@ export default function CabinRow({ cabin }: CabinRowProps) {
   });
 
   return (
-    <TableRow role="row">
-      <Img src={image} alt={`${cabinName}`} />
-      <Cabin>{cabinName}</Cabin>
-      <Capacity>{`Fits up to ${maxCapacity} guests`}</Capacity>
-      <Price>{formatCurrency(regularPrice)}</Price>
-      <Discount>{formatCurrency(discount || 0)}</Discount>
-      <Button
-        variation="danger"
-        disabled={isPending}
-        onClick={() => mutate(cabinId)}
-      >
-        Delete
-      </Button>
-    </TableRow>
+    <>
+      <TableRow role="row">
+        <Img src={image} alt={`${cabinName}`} />
+        <Cabin>{cabinName}</Cabin>
+        <Capacity>{`Fits up to ${maxCapacity} guests`}</Capacity>
+        <Price>{formatCurrency(regularPrice)}</Price>
+        <Discount>{formatCurrency(discount || 0)}</Discount>
+        <FlexRow>
+          <Button onClick={() => setShowForm((s) => !s)}>Edit</Button>
+          <Button
+            variation="danger"
+            disabled={isPending}
+            onClick={() => mutate(cabinId)}
+          >
+            Delete
+          </Button>
+        </FlexRow>
+      </TableRow>
+      {showForm && <CreateCabinForm cabin={cabin} />}
+    </>
   );
 }

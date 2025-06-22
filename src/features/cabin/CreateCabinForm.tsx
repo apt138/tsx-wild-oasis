@@ -5,12 +5,30 @@ import FileInput from "../../ui/FileInput";
 import Button from "../../ui/Button";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createCabin } from "../../services/apiCabins";
+import { createCabin, updateCabin } from "../../services/apiCabins";
 import toast from "react-hot-toast";
-import type { InsertCabin } from "./types";
+import type { Cabin, InsertCabin } from "./types";
 import FormRow from "../../ui/FormRow";
 
-export default function CreateCabinForm() {
+const initialValue: InsertCabin = {
+  cabin_name: "",
+  regular_price: 0,
+  discount: 0,
+  description: "",
+  max_capacity: 1,
+  image: "",
+};
+
+interface CreateCabinFormProps {
+  cabin?: Cabin;
+}
+
+function isEditCabin(cabin: InsertCabin | Cabin | undefined): cabin is Cabin {
+  if (!cabin) return false;
+  return "cabin_id" in cabin;
+}
+
+export default function CreateCabinForm({ cabin }: CreateCabinFormProps) {
   const {
     register,
     handleSubmit,
@@ -18,21 +36,16 @@ export default function CreateCabinForm() {
     getValues,
     formState: { errors },
   } = useForm<InsertCabin>({
-    defaultValues: {
-      cabin_name: "",
-      regular_price: 0,
-      discount: 0,
-      description: "",
-      max_capacity: 1,
-      image: "",
-    },
+    // if edit flow , populate the form with cabin data.
+    // else populate with default value
+    defaultValues: cabin || initialValue,
   });
   const queryClient = useQueryClient();
-  const { mutate, isPending } = useMutation({
+  // mutation function for handing POST operation
+  const { mutate: createMutation, isPending: isCreatePending } = useMutation({
     mutationFn: createCabin,
     onSuccess: (data) => {
-      const [cabin] = data;
-      toast.success(`Cabin '${cabin.cabin_name}' created successfully.`);
+      toast.success(`Cabin '${data.cabin_name}' created successfully.`);
       queryClient.invalidateQueries({ queryKey: ["cabin/getAll"] });
       reset();
     },
@@ -40,8 +53,26 @@ export default function CreateCabinForm() {
       toast.error(error.message);
     },
   });
-  function onSubmit(data: InsertCabin) {
-    mutate(data);
+  // mutation function for handling PATCH Operation
+  const { mutate: updateMutation, isPending: isEditPending } = useMutation({
+    // since cabin_id won't change during the session
+    // making use of closure to pass the cabin_id to update function
+    mutationFn: (data: Cabin) => updateCabin(cabin?.cabin_id, data),
+    onSuccess: (data) => {
+      toast.success(`Cabin '${data?.cabin_id}' updated sucessfully.`);
+      queryClient.invalidateQueries({ queryKey: ["cabin/getAll"] });
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+  const isPending = isCreatePending || isEditPending;
+  function onSubmit(data: InsertCabin | Cabin) {
+    if (isEditCabin(data)) {
+      updateMutation(data);
+    } else {
+      createMutation(data);
+    }
   }
   return (
     <Form onSubmit={handleSubmit(onSubmit, (error) => console.log(error))}>
@@ -143,7 +174,9 @@ export default function CreateCabinForm() {
         <Button variation="secondary" type="reset" disabled={isPending}>
           Cancel
         </Button>
-        <Button disabled={isPending}>Create</Button>
+        <Button disabled={isPending}>
+          {isEditCabin(cabin) ? "Edit" : "Create"}
+        </Button>
       </FormRow>
     </Form>
   );
