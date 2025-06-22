@@ -37,9 +37,8 @@ export async function createCabin(cabin: InsertCabin) {
       `${Date.now()}-${file.name.replaceAll("/", "")}`
     );
     imagePath = fullPath;
-  } catch (err) {
-    console.log(err);
-    return [];
+  } catch {
+    throw new Error("Errow while creating new cabin.");
   }
   const { data, error } = await supabase
     .from("wo_cabins")
