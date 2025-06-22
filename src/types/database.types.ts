@@ -82,7 +82,7 @@ export type Database = {
           created_at: string
           description: string | null
           discount: number | null
-          image: string
+          image: string | null
           max_capacity: number
           regular_price: number
           updated_at: string | null
@@ -93,7 +93,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           discount?: number | null
-          image: string
+          image?: string | null
           max_capacity: number
           regular_price: number
           updated_at?: string | null
@@ -104,7 +104,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           discount?: number | null
-          image?: string
+          image?: string | null
           max_capacity?: number
           regular_price?: number
           updated_at?: string | null
@@ -148,28 +148,28 @@ export type Database = {
         Row: {
           breakfast_price: number | null
           created_at: string
-          id: number
           max_booking_length: number
           max_guest_per_booking: number
           min_booking_length: number
+          setting_id: number
           updated_at: string | null
         }
         Insert: {
           breakfast_price?: number | null
           created_at?: string
-          id?: number
           max_booking_length: number
           max_guest_per_booking: number
           min_booking_length: number
+          setting_id?: number
           updated_at?: string | null
         }
         Update: {
           breakfast_price?: number | null
           created_at?: string
-          id?: number
           max_booking_length?: number
           max_guest_per_booking?: number
           min_booking_length?: number
+          setting_id?: number
           updated_at?: string | null
         }
         Relationships: []
