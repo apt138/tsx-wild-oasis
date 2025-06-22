@@ -6,6 +6,8 @@ import { useState } from "react";
 import CreateCabinForm from "./CreateCabinForm";
 import FlexRow from "../../ui/FlexRow";
 import useDeleteCabinMutation from "./hooks/useDeleteCabinMutation";
+import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
+import useCreateCabinMutation from "./hooks/useCreateCabinMutation";
 
 interface CabinRowProps {
   cabin: Cabin;
@@ -66,6 +68,17 @@ export default function CabinRow({ cabin }: CabinRowProps) {
   } = cabin;
 
   const { isDeletePending, deleteMutationFn } = useDeleteCabinMutation();
+  const { isCreatePending, createMutationFn } = useCreateCabinMutation();
+
+  function handleDuplicate() {
+    createMutationFn({
+      cabin_name: `Copy of ${cabin.cabin_name}`,
+      max_capacity: maxCapacity,
+      discount,
+      regular_price: regularPrice,
+      image: cabin.image,
+    });
+  }
 
   return (
     <>
@@ -74,15 +87,28 @@ export default function CabinRow({ cabin }: CabinRowProps) {
         <Cabin>{cabinName}</Cabin>
         <Capacity>{`Fits up to ${maxCapacity} guests`}</Capacity>
         <Price>{formatCurrency(regularPrice)}</Price>
-        <Discount>{formatCurrency(discount || 0)}</Discount>
+        {discount !== 0 ? (
+          <Discount>{formatCurrency(discount || 0)}</Discount>
+        ) : (
+          <div>&mdash;</div>
+        )}
         <FlexRow>
-          <Button onClick={() => setShowForm((s) => !s)}>Edit</Button>
+          <Button
+            variation="secondary"
+            disabled={isCreatePending}
+            onClick={handleDuplicate}
+          >
+            <HiSquare2Stack />
+          </Button>
+          <Button onClick={() => setShowForm((s) => !s)} variation="secondary">
+            <HiPencil />
+          </Button>
           <Button
             variation="danger"
             disabled={isDeletePending}
             onClick={() => deleteMutationFn(cabinId)}
           >
-            Delete
+            <HiTrash />
           </Button>
         </FlexRow>
       </TableRow>

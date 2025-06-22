@@ -28,21 +28,26 @@ export async function deleteCabin(cabin_id: number) {
 
 export async function createCabin(cabin: InsertCabin) {
   // 1. try to upload the file
-  let imagePath: string = "";
-  const file = cabin.image[0] as unknown as File;
-  try {
-    const { fullPath } = await uploadFile(
-      "wo-images",
-      file,
-      `${Date.now()}-${file.name.replaceAll("/", "")}`
-    );
-    imagePath = fullPath;
-  } catch {
-    // 2.(a) if file upload fails, don't proceed further with cabin creation
-    // early return
-    throw new Error(
-      "Errow while creating new cabin. File upload may not be successful"
-    );
+  let imagePath: string = cabin.image;
+  const isImageExist =
+    typeof cabin.image === "string" &&
+    cabin.image.startsWith(import.meta.env.VITE_SUPABASE_URL);
+  if (!isImageExist) {
+    const file = cabin.image[0] as unknown as File;
+    try {
+      const { fullPath } = await uploadFile(
+        "wo-images",
+        file,
+        `${Date.now()}-${file.name.replaceAll("/", "")}`
+      );
+      imagePath = fullPath;
+    } catch {
+      // 2.(a) if file upload fails, don't proceed further with cabin creation
+      // early return
+      throw new Error(
+        "Errow while creating new cabin. File upload may not be successful"
+      );
+    }
   }
   // 2.(b) if file uploads success, proceed with cabin creation
   const { data, error } = await supabase
@@ -50,9 +55,11 @@ export async function createCabin(cabin: InsertCabin) {
     .insert([
       {
         ...cabin,
-        image: `${
-          import.meta.env.VITE_SUPABASE_URL
-        }/storage/v1/object/public/${imagePath}`,
+        image: isImageExist
+          ? imagePath
+          : `${
+              import.meta.env.VITE_SUPABASE_URL
+            }/storage/v1/object/public/${imagePath}`,
       },
     ])
     .select()
@@ -101,6 +108,7 @@ export async function updateCabin(cabin_id: number | undefined, cabin: Cabin) {
     .from("wo_cabins")
     .update({
       ...cabin,
+      updated_at: new Date().toISOString(),
       // conditionally assignment required becoause imagePath either will be fullImageURL
       // or simply [bucket_name]/[file_name]
       image: isImageUpdated
