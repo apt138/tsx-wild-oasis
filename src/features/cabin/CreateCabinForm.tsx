@@ -132,7 +132,11 @@ export default function CreateCabinForm() {
         id="cabin-image"
         error={errors?.image?.message}
       >
-        <FileInput id="cabin-image" name="cabinImage" disabled={isPending} />
+        <FileInput
+          id="cabin-image"
+          disabled={isPending}
+          {...register("image")}
+        />
       </FormRow>
 
       <FormRow>

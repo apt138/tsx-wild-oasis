@@ -1,4 +1,5 @@
 import type { InsertCabin } from "../features/cabin/types";
+import { uploadFile } from "./apiBuckets";
 import { supabase } from "./supabase";
 
 export async function getAllCabins() {
@@ -26,9 +27,30 @@ export async function deleteCabin(cabin_id: number) {
 }
 
 export async function createCabin(cabin: InsertCabin) {
+  // 1. try to upload the file
+  let imagePath: string = "";
+  const file = cabin.image[0] as unknown as File;
+  try {
+    const { fullPath } = await uploadFile(
+      "wo-images",
+      file,
+      `${Date.now()}-${file.name.replaceAll("/", "")}`
+    );
+    imagePath = fullPath;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
   const { data, error } = await supabase
     .from("wo_cabins")
-    .insert([cabin])
+    .insert([
+      {
+        ...cabin,
+        image: `${
+          import.meta.env.VITE_SUPABASE_URL
+        }/storage/v1/object/public/${imagePath}`,
+      },
+    ])
     .select();
 
   if (error) {
