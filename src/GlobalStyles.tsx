@@ -94,6 +94,12 @@ button{
     cursor: not-allowed
 }
 
+input,textarea{
+    border: 1px solid var(--color-grey-300);
+    border-radius: var(--border-radius-sm);
+
+}
+
 input:disabled,
 select:disabled{
     background-color: var(--color-grey-200);
