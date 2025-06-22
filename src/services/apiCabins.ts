@@ -1,3 +1,4 @@
+import type { InsertCabin } from "../features/cabin/types";
 import { supabase } from "./supabase";
 
 export async function getAllCabins() {
@@ -22,4 +23,17 @@ export async function deleteCabin(cabin_id: number) {
     console.error(error);
     throw new Error(`Error while deleting the cabin with id: ${cabin_id}`);
   }
+}
+
+export async function createCabin(cabin: InsertCabin) {
+  const { data, error } = await supabase
+    .from("wo_cabins")
+    .insert([cabin])
+    .select();
+
+  if (error) {
+    console.error(error);
+    throw new Error("Error while creating new cabin.");
+  }
+  return data;
 }

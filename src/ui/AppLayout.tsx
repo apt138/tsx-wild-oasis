@@ -7,6 +7,8 @@ const Main = styled.main`
   background-color: var(--color-grey-50);
   /* top (left & right) bottom */
   padding: 4rem 4.8rem 6.4rem;
+  overflow: scroll;
+  max-height: 60rem;
 `;
 
 const StyledAppLayout = styled.div`
@@ -20,6 +22,7 @@ const StyledAppLayout = styled.div`
 const Container = styled.div`
   max-width: 120rem;
   margin: 0 auto;
+  overflow: scroll;
 
   display: flex;
   flex-direction: column;

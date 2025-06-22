@@ -1,93 +1,145 @@
-import styled from "styled-components";
 import Form from "../../ui/Form";
 import Input from "../../ui/Input";
 import TextArea from "../../ui/TextArea";
 import FileInput from "../../ui/FileInput";
 import Button from "../../ui/Button";
-import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
-
-const FormRow = styled.div`
-  padding: 1.2rem 0;
-
-  display: grid;
-  grid-template-columns: 24rem 1fr 1.2fr;
-  gap: 2.4rem;
-
-  &:first-child {
-    padding-top: 0;
-  }
-
-  &:last-child {
-    padding-bottom: 0;
-  }
-
-  &:not(:last-child) {
-    border-bottom: 1px solid var(--color-grey-100);
-  }
-
-  &:has(button) {
-    display: flex;
-    justify-content: end;
-    gap: 1.2rem;
-  }
-`;
-const Label = styled.label`
-  font-weight: 500;
-`;
+import { useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createCabin } from "../../services/apiCabins";
+import toast from "react-hot-toast";
+import type { InsertCabin } from "./types";
+import FormRow from "../../ui/FormRow";
 
 export default function CreateCabinForm() {
-  const { register, handleSubmit } = useForm();
-  function onSubmit(data: FieldValues) {
-    console.log(data);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    getValues,
+    formState: { errors },
+  } = useForm<InsertCabin>({
+    defaultValues: {
+      cabin_name: "",
+      regular_price: 0,
+      discount: 0,
+      description: "",
+      max_capacity: 1,
+      image: "",
+    },
+  });
+  const queryClient = useQueryClient();
+  const { mutate, isPending } = useMutation({
+    mutationFn: createCabin,
+    onSuccess: (data) => {
+      const [cabin] = data;
+      toast.success(`Cabin '${cabin.cabin_name}' created successfully.`);
+      queryClient.invalidateQueries({ queryKey: ["cabin/getAll"] });
+      reset();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+  function onSubmit(data: InsertCabin) {
+    mutate(data);
   }
   return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
-      <FormRow>
-        <Label htmlFor="cabin-name">Cabin name</Label>
-        <Input type="text" id="cabin-name" {...register("cabinName")} />
+    <Form onSubmit={handleSubmit(onSubmit, (error) => console.log(error))}>
+      <FormRow
+        label="Cabin name"
+        id="cabin-name"
+        error={errors?.cabin_name?.message}
+      >
+        <Input
+          type="text"
+          id="cabin-name"
+          disabled={isPending}
+          {...register("cabin_name", { required: "This field is required." })}
+        />
       </FormRow>
 
-      <FormRow>
-        <Label htmlFor="max-capacity">Max capacity</Label>
-        <Input type="number" id="max-capacity" {...register("maxCapacity")} />
+      <FormRow
+        label="Max Capacity"
+        id="max-capacity"
+        error={errors?.max_capacity?.message}
+      >
+        <Input
+          type="number"
+          id="max-capacity"
+          disabled={isPending}
+          {...register("max_capacity", {
+            required: "This field is required.",
+            min: {
+              value: 1,
+              message: "Capacity must be greater than or equal to 1.",
+            },
+          })}
+        />
       </FormRow>
 
-      <FormRow>
-        <Label htmlFor="regular-price">Regular Price</Label>
+      <FormRow
+        label="Regular price"
+        id="regular-price"
+        error={errors?.regular_price?.message}
+      >
         <Input
           type="number"
           id="regular-price"
           step={0.01}
-          {...register("regularPrice")}
+          disabled={isPending}
+          {...register("regular_price", {
+            valueAsNumber: true,
+            required: "This field is required",
+            min: {
+              value: 1,
+              message: "Price must be greater than or equal to 1.",
+            },
+          })}
         />
       </FormRow>
 
-      <FormRow>
-        <Label htmlFor="discount">Discount</Label>
+      <FormRow label="Discount" id="discount" error={errors?.discount?.message}>
         <Input
           type="number"
           id="discount"
           step={0.01}
           defaultValue={0}
-          {...register("discount")}
+          disabled={isPending}
+          {...register("discount", {
+            valueAsNumber: true,
+            required: "This field is required.",
+            validate: (value) =>
+              value! <= getValues().regular_price ||
+              "Discount must be less than or equal to price",
+          })}
         />
       </FormRow>
 
-      <FormRow>
-        <Label htmlFor="description">Description for website</Label>
-        <TextArea id="description" {...register("description")} />
+      <FormRow
+        label="Description"
+        id="description"
+        error={errors?.description?.message}
+      >
+        <TextArea
+          id="description"
+          disabled={isPending}
+          {...register("description", { required: "This field is required." })}
+        />
+      </FormRow>
+
+      <FormRow
+        label="Cabin Photo"
+        id="cabin-image"
+        error={errors?.image?.message}
+      >
+        <FileInput id="cabin-image" name="cabinImage" disabled={isPending} />
       </FormRow>
 
       <FormRow>
-        <Label htmlFor="cabin-image">Cabin photo</Label>
-        <FileInput id="cabin-image" name="cabinImage" />
-      </FormRow>
-
-      <FormRow>
-        <Button variation="secondary" type="reset">
+        <Button variation="secondary" type="reset" disabled={isPending}>
           Cancel
         </Button>
-        <Button>Create</Button>
+        <Button disabled={isPending}>Create</Button>
       </FormRow>
     </Form>
   );

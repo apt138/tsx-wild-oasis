@@ -100,6 +100,7 @@ input,textarea{
 
 }
 
+textarea:disabled,
 input:disabled,
 select:disabled{
     background-color: var(--color-grey-200);
