@@ -1,8 +1,6 @@
 import {
   createContext,
   useContext,
-  useEffect,
-  useRef,
   useState,
   type JSX,
   type PropsWithChildren,

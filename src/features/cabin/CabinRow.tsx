@@ -2,12 +2,12 @@ import styled from "styled-components";
 import type { Cabin } from "./types";
 import { formatCurrency } from "../../utils/formatter";
 import Button from "../../ui/Button";
-import { useState } from "react";
 import CreateCabinForm from "./CreateCabinForm";
 import FlexRow from "../../ui/FlexRow";
 import useDeleteCabinMutation from "./hooks/useDeleteCabinMutation";
 import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
 import useCreateCabinMutation from "./hooks/useCreateCabinMutation";
+import Modal from "../../ui/Modal";
 
 interface CabinRowProps {
   cabin: Cabin;
@@ -57,7 +57,6 @@ const Discount = styled.div`
   color: var(--color-grey-700);
 `;
 export default function CabinRow({ cabin }: CabinRowProps) {
-  const [showForm, setShowForm] = useState(false);
   const {
     image,
     cabin_name: cabinName,
@@ -81,38 +80,50 @@ export default function CabinRow({ cabin }: CabinRowProps) {
   }
 
   return (
-    <>
-      <TableRow role="row">
-        <Img src={image || ""} alt={`${cabinName}`} />
-        <Cabin>{cabinName}</Cabin>
-        <Capacity>{`Fits up to ${maxCapacity} guests`}</Capacity>
-        <Price>{formatCurrency(regularPrice)}</Price>
-        {discount !== 0 ? (
-          <Discount>{formatCurrency(discount || 0)}</Discount>
-        ) : (
-          <div>&mdash;</div>
-        )}
-        <FlexRow>
-          <Button
-            variation="secondary"
-            disabled={isCreatePending}
-            onClick={handleDuplicate}
-          >
-            <HiSquare2Stack />
-          </Button>
-          <Button onClick={() => setShowForm((s) => !s)} variation="secondary">
-            <HiPencil />
-          </Button>
-          <Button
-            variation="danger"
-            disabled={isDeletePending}
-            onClick={() => deleteMutationFn(cabinId)}
-          >
-            <HiTrash />
-          </Button>
-        </FlexRow>
-      </TableRow>
-      {showForm && <CreateCabinForm cabin={cabin} />}
-    </>
+    <TableRow role="row">
+      <Img src={image || ""} alt={`${cabinName}`} />
+      <Cabin>{cabinName}</Cabin>
+      <Capacity>{`Fits up to ${maxCapacity} guests`}</Capacity>
+      <Price>{formatCurrency(regularPrice)}</Price>
+      {discount !== 0 ? (
+        <Discount>{formatCurrency(discount || 0)}</Discount>
+      ) : (
+        <div>&mdash;</div>
+      )}
+      <FlexRow>
+        <Button
+          variation="secondary"
+          disabled={isCreatePending}
+          onClick={handleDuplicate}
+        >
+          <HiSquare2Stack />
+        </Button>
+        <Modal>
+          <Modal.Open
+            render={(onClick) => (
+              <Button
+                onClick={() => onClick("edit-cabin")}
+                variation="secondary"
+              >
+                <HiPencil />
+              </Button>
+            )}
+          />
+          <Modal.Window
+            modalId="edit-cabin"
+            render={(onClose) => (
+              <CreateCabinForm onCloseModal={onClose} cabin={cabin} />
+            )}
+          />
+        </Modal>
+        <Button
+          variation="danger"
+          disabled={isDeletePending}
+          onClick={() => deleteMutationFn(cabinId)}
+        >
+          <HiTrash />
+        </Button>
+      </FlexRow>
+    </TableRow>
   );
 }

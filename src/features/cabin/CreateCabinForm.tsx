@@ -56,6 +56,7 @@ export default function CreateCabinForm({
         },
       });
     }
+    onCloseModal?.();
   }
   return (
     <Form
