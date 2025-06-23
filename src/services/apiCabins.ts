@@ -127,6 +127,7 @@ export async function updateCabin(cabin_id: number | undefined, cabin: Cabin) {
   // case where update operation is failed, let the user informed
   if (error) {
     console.error("Error while updating a cabin.");
+    throw new Error("Error while updating the  cabin.");
   }
   // case where everything goes well!
   return data;

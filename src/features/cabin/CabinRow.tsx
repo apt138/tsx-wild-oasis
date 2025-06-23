@@ -8,6 +8,7 @@ import useDeleteCabinMutation from "./hooks/useDeleteCabinMutation";
 import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
 import useCreateCabinMutation from "./hooks/useCreateCabinMutation";
 import Modal from "../../ui/Modal";
+import ConfirmDelete from "../../ui/ConfirmDelete";
 
 interface CabinRowProps {
   cabin: Cabin;
@@ -115,14 +116,30 @@ export default function CabinRow({ cabin }: CabinRowProps) {
               <CreateCabinForm onCloseModal={onClose} cabin={cabin} />
             )}
           />
+
+          <Modal.Open
+            render={(onClick) => (
+              <Button
+                variation="danger"
+                disabled={isDeletePending}
+                onClick={() => onClick("delete-cabin")}
+              >
+                <HiTrash />
+              </Button>
+            )}
+          />
+          <Modal.Window
+            modalId="delete-cabin"
+            render={(onClose) => (
+              <ConfirmDelete
+                resource="Cabin"
+                id={cabinName}
+                onCloseModal={onClose}
+                onConfirm={() => deleteMutationFn(cabinId)}
+              />
+            )}
+          />
         </Modal>
-        <Button
-          variation="danger"
-          disabled={isDeletePending}
-          onClick={() => deleteMutationFn(cabinId)}
-        >
-          <HiTrash />
-        </Button>
       </FlexRow>
     </TableRow>
   );
