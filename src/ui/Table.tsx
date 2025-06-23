@@ -1,4 +1,9 @@
-import { createContext, useContext, type PropsWithChildren } from "react";
+import {
+  createContext,
+  useContext,
+  type PropsWithChildren,
+  type JSX,
+} from "react";
 import styled from "styled-components";
 interface TableContextProps {
   columns: string;
@@ -51,7 +56,7 @@ const StyledHeader = styled(CommonRow)`
 function Header({ children }: PropsWithChildren) {
   const { columns } = useTableContext();
   return (
-    <StyledHeader role="row" columns={columns}>
+    <StyledHeader role="row" columns={columns} as="header">
       {children}
     </StyledHeader>
   );
@@ -71,7 +76,16 @@ function Row({ children }: PropsWithChildren) {
     </StyleRow>
   );
 }
-function Body() {}
+interface BodyProps<T> {
+  data: T[];
+  render: (a: T) => JSX.Element;
+}
+const StyledBody = styled.section`
+  margin: 0.4rem 0;
+`;
+function Body<T>({ data, render }: BodyProps<T>) {
+  return <StyledBody role="rowgroup">{data.map(render)}</StyledBody>;
+}
 
 const Footer = styled.footer``;
 

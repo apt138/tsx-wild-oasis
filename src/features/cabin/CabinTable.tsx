@@ -2,6 +2,7 @@ import CabinRow from "./CabinRow";
 import useCabinQuery from "./hooks/useCabinQuery";
 import Spinner from "../../ui/Spinner";
 import Table from "../../ui/Table";
+import type { Cabin } from "./types";
 
 export default function CabinTable() {
   const { cabins, isPendingCabins } = useCabinQuery();
@@ -16,9 +17,10 @@ export default function CabinTable() {
         <div>Discount</div>
         <div></div>
       </Table.Header>
-      {cabins.map((cabin) => (
-        <CabinRow cabin={cabin} key={cabin.cabin_id} />
-      ))}
+      <Table.Body<Cabin>
+        data={cabins}
+        render={(cabin) => <CabinRow cabin={cabin} key={cabin.cabin_id} />}
+      />
     </Table>
   );
 }
