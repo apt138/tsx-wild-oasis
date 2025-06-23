@@ -1,6 +1,8 @@
 import {
   createContext,
   useContext,
+  useEffect,
+  useRef,
   useState,
   type JSX,
   type PropsWithChildren,
@@ -8,6 +10,7 @@ import {
 import { createPortal } from "react-dom";
 import styled from "styled-components";
 import { HiXMark } from "react-icons/hi2";
+import useDetectOutsideClick from "../hooks/useDetectOutsideClick";
 
 interface ModalContextProps {
   modalId: string;
@@ -99,10 +102,12 @@ const Button = styled.button`
 `;
 function Window({ render, modalId: windowId }: WindowProps) {
   const { closeModal, modalId } = useModalContext();
+  const ref = useDetectOutsideClick<HTMLDivElement>(closeModal);
+
   if (modalId !== windowId) return;
   return createPortal(
     <Overlay>
-      <StyledModal>
+      <StyledModal ref={ref}>
         <Button onClick={closeModal}>
           <HiXMark />
         </Button>
