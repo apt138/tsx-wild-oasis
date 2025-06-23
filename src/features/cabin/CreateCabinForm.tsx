@@ -4,21 +4,20 @@ import TextArea from "../../ui/TextArea";
 import FileInput from "../../ui/FileInput";
 import Button from "../../ui/Button";
 import { useForm } from "react-hook-form";
-import type { Cabin, InsertCabin } from "./types";
+import type { Cabin, InsertCabin, UpdateCabin } from "./types";
 import FormRow from "../../ui/FormRow";
 import useCreateCabinMutation from "./hooks/useCreateCabinMutation";
 import useUpdateCabinMutation from "./hooks/useUpdateCabinMutation";
 
-const initialValue: InsertCabin = {
+const initialValue: UpdateCabin = {
   cabin_name: "",
-  regular_price: 0,
   discount: 0,
   description: "",
-  max_capacity: 1,
   image: "",
 };
 
 interface CreateCabinFormProps {
+  onCloseModal?: () => void;
   cabin?: Cabin;
 }
 
@@ -27,7 +26,10 @@ function isEditCabin(cabin: InsertCabin | Cabin | undefined): cabin is Cabin {
   return "cabin_id" in cabin;
 }
 
-export default function CreateCabinForm({ cabin }: CreateCabinFormProps) {
+export default function CreateCabinForm({
+  cabin,
+  onCloseModal,
+}: CreateCabinFormProps) {
   const {
     register,
     handleSubmit,
@@ -56,7 +58,10 @@ export default function CreateCabinForm({ cabin }: CreateCabinFormProps) {
     }
   }
   return (
-    <Form onSubmit={handleSubmit(onSubmit, (error) => console.log(error))}>
+    <Form
+      kind={onCloseModal ? "modal" : "regular"}
+      onSubmit={handleSubmit(onSubmit, (error) => console.log(error))}
+    >
       <FormRow
         label="Cabin name"
         id="cabin-name"
@@ -152,7 +157,12 @@ export default function CreateCabinForm({ cabin }: CreateCabinFormProps) {
       </FormRow>
 
       <FormRow>
-        <Button variation="secondary" type="reset" disabled={isPending}>
+        <Button
+          variation="secondary"
+          type="reset"
+          disabled={isPending}
+          onClick={onCloseModal}
+        >
           Cancel
         </Button>
         <Button disabled={isPending}>

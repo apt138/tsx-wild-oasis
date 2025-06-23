@@ -28,12 +28,12 @@ export async function deleteCabin(cabin_id: number) {
 
 export async function createCabin(cabin: InsertCabin) {
   // 1. try to upload the file
-  let imagePath: string = cabin.image;
+  let imagePath: string = cabin?.image || "";
   const isImageExist =
     typeof cabin.image === "string" &&
     cabin.image.startsWith(import.meta.env.VITE_SUPABASE_URL);
   if (!isImageExist) {
-    const file = cabin.image[0] as unknown as File;
+    const file = cabin?.image?.[0] as unknown as File;
     try {
       const { fullPath } = await uploadFile(
         "wo-images",
@@ -86,7 +86,10 @@ export async function updateCabin(cabin_id: number | undefined, cabin: Cabin) {
   const isImageUpdated = !(typeof cabin.image === "string");
   if (isImageUpdated) {
     // case where user tries to modify the image
-    const file = cabin.image[0] as unknown as File;
+    const file = cabin?.image?.[0] as unknown as File;
+    if (!file) {
+      throw new Error("File not found");
+    }
     // try to upload
     try {
       const { fullPath } = await uploadFile(

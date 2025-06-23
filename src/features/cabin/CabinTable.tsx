@@ -1,10 +1,7 @@
 import styled from "styled-components";
-import type { Cabin } from "./types";
 import CabinRow from "./CabinRow";
-
-interface CabinTableProps {
-  cabins: Cabin[];
-}
+import useCabinQuery from "./hooks/useCabinQuery";
+import Spinner from "../../ui/Spinner";
 
 const Table = styled.div`
   background-color: var(--color-grey-0);
@@ -30,7 +27,9 @@ const TableHeader = styled.header`
   align-items: center;
 `;
 
-export default function CabinTable({ cabins }: CabinTableProps) {
+export default function CabinTable() {
+  const { cabins, isPendingCabins } = useCabinQuery();
+  if (isPendingCabins) return <Spinner />;
   return (
     <Table role="table">
       <TableHeader role="row">

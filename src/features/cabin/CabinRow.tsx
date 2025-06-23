@@ -83,7 +83,7 @@ export default function CabinRow({ cabin }: CabinRowProps) {
   return (
     <>
       <TableRow role="row">
-        <Img src={image} alt={`${cabinName}`} />
+        <Img src={image || ""} alt={`${cabinName}`} />
         <Cabin>{cabinName}</Cabin>
         <Capacity>{`Fits up to ${maxCapacity} guests`}</Capacity>
         <Price>{formatCurrency(regularPrice)}</Price>
