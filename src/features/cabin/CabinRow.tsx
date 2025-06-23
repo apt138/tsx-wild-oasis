@@ -9,22 +9,11 @@ import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
 import useCreateCabinMutation from "./hooks/useCreateCabinMutation";
 import Modal from "../../ui/Modal";
 import ConfirmDelete from "../../ui/ConfirmDelete";
+import Table from "../../ui/Table";
 
 interface CabinRowProps {
   cabin: Cabin;
 }
-
-const TableRow = styled.div`
-  display: grid;
-  grid-template-columns: 0.6fr 1.8fr 2.2fr repeat(3, 1fr);
-  column-gap: 2.4rem;
-  align-items: center;
-  padding: 1.4rem 2.4rem;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid var(--color-grey-100);
-  }
-`;
 
 const Img = styled.img`
   display: block;
@@ -81,7 +70,7 @@ export default function CabinRow({ cabin }: CabinRowProps) {
   }
 
   return (
-    <TableRow role="row">
+    <Table.Row>
       <Img src={image || ""} alt={`${cabinName}`} />
       <Cabin>{cabinName}</Cabin>
       <Capacity>{`Fits up to ${maxCapacity} guests`}</Capacity>
@@ -141,6 +130,6 @@ export default function CabinRow({ cabin }: CabinRowProps) {
           />
         </Modal>
       </FlexRow>
-    </TableRow>
+    </Table.Row>
   );
 }
